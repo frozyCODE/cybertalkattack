@@ -1,6 +1,19 @@
 // controller.js
 import * as db from './models/database.js';
 
+// Fonction utilitaire pour échapper le HTML
+function escapeHtml(text) {
+ const map = {
+ '&': '&amp;',
+ '<': '&lt;',
+ '>': '&gt;',
+ '"': '&quot;',
+ "'": '&#039;',
+ '/': '&#x2F;'
+ };
+ return text.replace(/[&<>"'\/]/g, char => map[char]);
+}
+
 export default {
   readTodos: async (req, res) => {
     try {
@@ -29,6 +42,7 @@ export default {
       if (!name || typeof name !== 'string' || name.trim() === '') {
         return res.status(400).json({ success: false, error: 'Nom requis' });
       }
+      name = escapeHtml(name);
       const newTodo = await db.createTodo({ name, priority, done });
       res.status(201).json({ success: true, data: newTodo, message: 'Tâche créée avec succès' });
     } catch (error) {
