@@ -1,13 +1,22 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import CtrlTodo from './controller.js'
 
 const app = express();
 const PORT = 3000;
 
+// ESM-compatible __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ========================================
 // ROUTES REST API
@@ -23,6 +32,10 @@ app.delete('/api/todos/:id', CtrlTodo.deleteTodo);        // Supprimer un Todo
 app.get('/api/stats', CtrlTodo.getStats);
 app.delete('/api/todos', CtrlTodo.deleteAll);
 app.get('/', CtrlTodo.getDoc);
+// Serve SPA entry at /index
+app.get('/index', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // GESTION DES ERREURS 404
 app.use('/*splat', CtrlTodo.defaultRoute);
