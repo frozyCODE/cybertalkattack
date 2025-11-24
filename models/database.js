@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Pool de connexions MariaDB
+console.log('Attempting to create database connection pool...');
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -11,9 +12,10 @@ const pool = mysql.createPool({
   database: process.env.DB_DATABASE,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  connectTimeout: 10000 // 10 seconds timeout
 });
-pool;
+console.log('Database connection pool created. Connection will be tested on first query.');
 
 // Fonctions CRUD
 export async function getAllTodos() {
